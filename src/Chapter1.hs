@@ -72,6 +72,9 @@ the `.hs` extension.
 -}
 module Chapter1 where
 
+import Data.List (sort)
+
+
 {- |
 In Haskell, we have __expressions__. Expressions can be represented by some
 primitive values (numbers: 1, 100; characters: 'a', 'z'; booleans: True, False;
@@ -450,9 +453,7 @@ Implement the function that takes an integer value and returns the next 'Int'.
   function body with the proper implementation.
 -}
 next :: Int -> Int
-next x
-    | x >= 0    = x + 1
-    | otherwise = x - 1
+next x = x + 1
 
 {- |
 After you've implemented the function (or even during the implementation), you
@@ -494,7 +495,7 @@ Implement a function that returns the last digit of a given number.
 -}
 -- DON'T FORGET TO SPECIFY THE TYPE IN HERE
 lastDigit :: Int -> Int
-lastDigit n = mod n 10
+lastDigit n = mod (abs n) 10
 
 
 {- |
@@ -524,7 +525,10 @@ branches because it is an expression and it must always return some value.
   satisfying the check will be returned and, therefore, evaluated.
 -}
 closestToZero :: Int -> Int -> Int
-closestToZero x y = min (abs x) (abs y)
+closestToZero x y = if a < b then x else y
+    where
+        a = abs x
+        b = abs y
 
 
 {- |
@@ -557,14 +561,9 @@ value after "=" where the condition is true.
 
 Casual reminder about adding top-level type signatures for all functions :)
 -}
-
 mid :: Int -> Int -> Int -> Int
-mid x y z
-    | y < x && x < z = x
-    | z < x && x < y = x
-    | x < y && y < z = y
-    | z < y && y < x = y
-    | otherwise      = z
+mid x y z = sort xs !! 1
+    where xs = [x, y, z]
 
 {- |
 =⚔️= Task 8
@@ -646,10 +645,11 @@ specifying complex expressions.
 -}
 
 sumLast2 :: Int -> Int
-sumLast2 n = (+) (m n) (m a)
+sumLast2 x = (+) (m n) (m a)
   where
-    m x = mod x 10
+    n = abs x
     a = div n 10
+    m o = mod o 10
 
 
 {- |
@@ -671,9 +671,9 @@ aren't ready for this boss yet!
 -}
 
 firstDigit :: Int -> Int
-firstDigit n = if x == 0 then n else firstDigit x
-  where
-    x = div n 10
+firstDigit i = go $ abs i
+  where go n = if x == 0 then n else go x
+            where x = div n 10
 
 
 {-
