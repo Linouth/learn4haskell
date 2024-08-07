@@ -881,8 +881,10 @@ list.
 🕯 HINT: Use the 'cycle' function
 -}
 rotate :: Int -> [a] -> [a]
-rotate r xs = take n $ drop r $ cycle xs
-    where n = length xs
+rotate r xs
+    | r < 0     = []
+    | otherwise = take n $ drop r $ cycle xs
+        where n = length xs
 
 {- |
 =💣= Task 12*
