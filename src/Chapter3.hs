@@ -623,22 +623,37 @@ introducing extra newtypes.
 🕯 HINT: if you complete this task properly, you don't need to change the
     implementation of the "hitPlayer" function at all!
 -}
+
+-- Is this idiomatic? This seems a bit extreme to have a different type for
+-- every single field and return value
+newtype Health = Health Int
+newtype Armor = Armor Int
+newtype Attack = Attack Int
+newtype Dexterity = Dexterity Int
+newtype Strength = Strength Int
+
+newtype Damage = Damage Int
+newtype Defence = Defence Int
+
 data Player = Player
-    { playerHealth    :: Int
-    , playerArmor     :: Int
-    , playerAttack    :: Int
-    , playerDexterity :: Int
-    , playerStrength  :: Int
+    { playerHealth    :: Health
+    , playerArmor     :: Armor
+    , playerAttack    :: Attack
+    , playerDexterity :: Dexterity
+    , playerStrength  :: Strength
     }
 
-calculatePlayerDamage :: Int -> Int -> Int
-calculatePlayerDamage attack strength = attack + strength
+calculatePlayerDamage :: Attack -> Strength -> Damage
+calculatePlayerDamage (Attack attack) (Strength strength) = Damage (attack + strength)
 
-calculatePlayerDefense :: Int -> Int -> Int
-calculatePlayerDefense armor dexterity = armor * dexterity
+calculatePlayerDefense :: Armor -> Dexterity -> Defence
+calculatePlayerDefense (Armor armor) (Dexterity dexterity) = Defence (armor * dexterity)
 
-calculatePlayerHit :: Int -> Int -> Int -> Int
-calculatePlayerHit damage defense health = health + defense - damage
+calculatePlayerHit :: Damage -> Defence -> Health -> Health
+calculatePlayerHit
+    (Damage damage)
+    (Defence defense)
+    (Health health) = Health (health + defense - damage)
 
 -- The second player hits first player and the new first player is returned
 hitPlayer :: Player -> Player -> Player
@@ -815,6 +830,19 @@ parametrise data types in places where values can be of any general type.
 🕯 HINT: 'Maybe' that some standard types we mentioned above are useful for
   maybe-treasure ;)
 -}
+
+data TreasureChest t = TreasureChest
+    { treasureChestGold :: Int
+    , treasureChestLoot :: t
+    }
+
+newtype Dragon p = Dragon
+    { dragonPower :: p }
+
+data Lair p t = Lair
+    { lairDragon :: Dragon p
+    , lairTreasure :: Maybe (TreasureChest t)
+    }
 
 {-
 =🛡= Typeclasses
