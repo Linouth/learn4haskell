@@ -344,6 +344,13 @@ of a book, but you are not limited only by the book properties we described.
 Create your own book type of your dreams!
 -}
 
+data Book = MkBook
+    { bookName :: String
+    , bookAuthor:: String
+    , bookPages :: Int
+    , bookRecommendedBy :: String
+    } deriving (Show)
+
 {- |
 =⚔️= Task 2
 
@@ -375,6 +382,27 @@ after the fight. The battle has the following possible outcomes:
 ♫ NOTE: In this task, you need to implement only a single round of the fight.
 
 -}
+
+data Knight = MkKnight
+    { knightHealth :: Int
+    , knightAttack :: Int
+    , knightGold   :: Int
+    }
+
+data Monster = MkMonster
+    { monsterHealth :: Int
+    , monsterAttack :: Int
+    , monsterGold   :: Int
+    }
+
+fight :: Monster -> Knight -> Int
+fight monster knight
+    | monsterHealth m <= 0 = knightGold k + monsterGold m
+    | knightHealth k <= 0 = -1
+    | otherwise = knightGold k
+    where
+        m = monster { monsterHealth = monsterHealth monster - knightAttack knight }
+        k = knight { knightHealth = knightHealth knight - monsterAttack monster }
 
 {- |
 =🛡= Sum types
@@ -461,6 +489,11 @@ and provide more flexibility when working with data types.
 Create a simple enumeration for the meal types (e.g. breakfast). The one who
 comes up with the most number of names wins the challenge. Use your creativity!
 -}
+data Meal
+    = Breakfast
+    | Lunch
+    | Snack
+    | Diner
 
 {- |
 =⚔️= Task 4
@@ -481,6 +514,34 @@ After defining the city, implement the following functions:
    complicated task, walls can be built only if the city has a castle
    and at least 10 living __people__ inside in all houses of the city in total.
 -}
+
+data House = House Int deriving(Show)
+data Building = Church | Library deriving(Show)
+data City = City
+    { cityCastle :: String
+    , cityWall :: Bool
+    , cityBuilding :: Building
+    , cityHouses :: [House]
+    } deriving (Show)
+
+buildCastle :: City -> String -> City
+buildCastle c name = c { cityCastle = name }
+
+buildHouse :: City -> Int -> City
+buildHouse c people
+    | people > 4 = error "House cannot support more than four people"
+    | otherwise = c { cityHouses = House people : cityHouses c }
+
+buildWalls :: City -> City
+buildWalls (City "" _ _ _)  = error "City does not have a castle, so a wall seems unnecessary"
+buildWalls c
+    | count (cityHouses c) < 10 = error "City does not have many people, so a wall seems unnecessary"
+    | otherwise = c { cityWall = True }
+    where
+        count = foldl (\y (House x) -> x + y) 0
+
+city :: City
+city = City "" False Library []
 
 {-
 =🛡= Newtypes
