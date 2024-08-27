@@ -626,14 +626,14 @@ introducing extra newtypes.
 
 -- Is this idiomatic? This seems a bit extreme to have a different type for
 -- every single field and return value
-newtype Health = Health Int
-newtype Armor = Armor Int
-newtype Attack = Attack Int
-newtype Dexterity = Dexterity Int
-newtype Strength = Strength Int
+newtype Health = Health Int deriving(Show)
+newtype Armor = Armor Int deriving(Show)
+newtype Attack = Attack Int deriving(Show)
+newtype Dexterity = Dexterity Int deriving(Show)
+newtype Strength = Strength Int deriving(Show)
 
-newtype Damage = Damage Int
-newtype Defence = Defence Int
+newtype Damage = Damage Int deriving(Show)
+newtype Defence = Defence Int deriving(Show)
 
 data Player = Player
     { playerHealth    :: Health
@@ -1001,6 +1001,22 @@ Implement instances of "Append" for the following types:
 class Append a where
     append :: a -> a -> a
 
+newtype Gold = Gold Int deriving(Show)
+
+instance Append Gold where
+    append :: Gold -> Gold -> Gold
+    append (Gold a) (Gold b) = Gold (a + b)
+
+instance Append [a] where
+    append :: [a] -> [a] -> [a]
+    append = (++)
+
+instance (Append a) => Append (Maybe a) where
+    append :: Maybe a -> Maybe a -> Maybe a
+    append (Just a) (Just b) = Just $ append a b
+    append (Just a) Nothing = Just a
+    append Nothing (Just b) = Just b
+    append Nothing Nothing = Nothing
 
 {-
 =🛡= Standard Typeclasses and Deriving
@@ -1062,6 +1078,25 @@ implement the following functions:
 🕯 HINT: to implement this task, derive some standard typeclasses
 -}
 
+data Day = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
+    deriving (Show, Enum)
+
+isWeekend :: Day -> Bool
+isWeekend Saturday = True
+isWeekend Sunday   = True
+isWeekend _        = False
+
+nextDay :: Day -> Day
+nextDay d = toEnum $ mod (fromEnum d + 1) 7
+
+daysToParty :: Day -> Int
+daysToParty d
+    | x < 0     = fromEnum Friday + 3 + x
+    | otherwise = x
+    where
+        x = fromEnum Friday - fromEnum d
+
+
 {-
 =💣= Task 9*
 
@@ -1096,6 +1131,28 @@ properties using typeclasses, but they are different data types in the end.
 Implement data types and typeclasses, describing such a battle between two
 contestants, and write a function that decides the outcome of a fight!
 -}
+
+data BattleMonster = Monster
+    { mHealth :: Health
+    , mAttack :: Attack}
+
+data BattleKnight = Knight
+    { kHealth :: Health
+    , kAttack :: Attack
+    , kDefence :: Defence}
+    deriving(Show)
+
+class Fighter a where
+    getHealth :: a -> Health
+    getAttack :: a -> Attack
+
+instance Fighter BattleMonster where
+    getHealth = mHealth
+    getAttack = mAttack
+
+instance Fighter BattleKnight where
+    getHealth = kHealth
+    getAttack = kAttack
 
 
 {-
